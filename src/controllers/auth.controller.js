@@ -3,6 +3,7 @@ import {ApiResponse} from "../utils/api-response.js";
 import {asyncHandler} from "../utils/async-handler.js";
 import { ApiError } from "../utils/api-error.js";
 import {sendEmail} from "../utils/mail.js";
+import {emailVerificationMaingenContent} from "../utils/mail.js";
 
 const generateAccessAndRefreshToken = async (userId)=>{
     try {
@@ -10,7 +11,7 @@ const generateAccessAndRefreshToken = async (userId)=>{
         const accessToken = user.generateAccessToken();
         const refreshToken = user.generateRefreshToken();
         user.refreshToken = refreshToken;
-        await user.save(validateBeforeSave=false);
+        await user.save({validateBeforeSave:false});
         return {accessToken, refreshToken};
     } catch (error) {
         throw new ApiError(500, "Something went wrong while generating access and refresh token");
@@ -29,16 +30,16 @@ const registerUser = asyncHandler(async (req,res)=>{
         email,
         username,
         password,
-        isVerified: false,
+        isEmailVerified: false,
     })
     const {unHashedToken, hashedToken, tokenExpiry}=user.generateTemporaryToken();
     user.emailVerificationToken = hashedToken;
     user.emailVerificationTokenExpiry = tokenExpiry;
-    await user.save(validateBeforeSave=false);
+    await user.save({validateBeforeSave:false});
 
     await sendEmail(
         {
-            email:user?.email,
+            to:user?.email,
             subject:"verify your email",
             mailgenContent:emailVerificationMaingenContent(
                 user?.username,
