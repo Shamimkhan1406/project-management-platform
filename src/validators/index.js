@@ -10,4 +10,11 @@ const userRegistrationValidator = () => {
     ]
 }
 
-export { userRegistrationValidator }
+const userLoginValidator = () => {
+    return [
+        body("email").trim().notEmpty().withMessage("Email is required").isEmail().withMessage("Email is not valid"),
+        body("password").notEmpty().withMessage("Password is required").isLength({ min: 6 }).withMessage("Password must be at least 6 characters long"),
+    ]
+}
+
+export { userRegistrationValidator, userLoginValidator };
