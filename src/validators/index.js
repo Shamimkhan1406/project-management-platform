@@ -22,7 +22,7 @@ const userForgotPasswordValidator = ()=>{
         body("email")
         .notEmpty()
         .withMessage("user password is required")
-        .isEmail
+        .isEmail()
         .withMessage("email is invalid")
     ]
 }
